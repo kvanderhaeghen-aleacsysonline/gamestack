@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Gamestack.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="640"
+        x:Class="Gamestack.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Gamestack" Width="1000" Height="640">
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="#1F000000" Padding="14,8">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="Gamestack" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding IdentityLabel}" Opacity="0.7" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <Border DockPanel.Dock="Left" Width="170" Background="#14000000" Padding="10"
+                IsVisible="{Binding IsConfigured}">
+            <StackPanel Spacing="8">
+                <TextBlock Text="NAVIGATE" Opacity="0.5" FontSize="11" Margin="2,0,0,4"/>
+                <Button Content="📦 Projects" Command="{Binding GoToExplorerCommand}" HorizontalAlignment="Stretch"/>
+                <Button Content="🎮 Games" Command="{Binding GoToGamesCommand}" HorizontalAlignment="Stretch"/>
+                <Button Content="✏️ Changes" Command="{Binding GoToChangesCommand}" HorizontalAlignment="Stretch"/>
+                <Button Content="👀 Reviews" Command="{Binding GoToReviewsCommand}" HorizontalAlignment="Stretch"/>
+                <Button Content="⚙️ Settings" Command="{Binding OpenSettingsCommand}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </Border>
+
+        <ContentControl Content="{Binding CurrentPage}"/>
+    </DockPanel>
+</Window>

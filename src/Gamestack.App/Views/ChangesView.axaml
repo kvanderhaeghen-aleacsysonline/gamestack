@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gamestack.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="600"
+             x:Class="Gamestack.App.Views.ChangesView"
+             x:DataType="vm:ChangesViewModel">
+    <DockPanel Margin="16">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+            <TextBlock Text="Pending changes" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Button Content="↻ Detect" Command="{Binding RefreshCommand}"/>
+        </StackPanel>
+
+        <Border DockPanel.Dock="Bottom" Background="#10000000" CornerRadius="6" Padding="12" Margin="0,8,0,0">
+            <StackPanel Spacing="6">
+                <TextBlock Text="{Binding SelectedChange.WarningSummary}" Foreground="DarkOrange" TextWrapping="Wrap"
+                           IsVisible="{Binding SelectedChange.HasWarnings}"/>
+                <TextBox Text="{Binding Description}" PlaceholderText="Describe what changed (required to push)…"
+                         AcceptsReturn="True" Height="56"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="⬆ Push" Command="{Binding PushCommand}"/>
+                    <Button Content="Force push" Command="{Binding ForcePushCommand}" IsVisible="{Binding HasConflict}"/>
+                    <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Opacity="0.8" TextWrapping="Wrap"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <ListBox ItemsSource="{Binding Changes}" SelectedItem="{Binding SelectedChange}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ChangeItemViewModel">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <TextBlock Grid.Column="0" Text="{Binding Badge}" Margin="0,0,8,0" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Path}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding KindLabel}" Opacity="0.6" Margin="8,0"/>
+                        <TextBlock Grid.Column="3" Text="{Binding SizeLabel}" Opacity="0.6"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

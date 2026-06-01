@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gamestack.App.ViewModels"
+             xmlns:m="using:Gamestack.Core.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="600"
+             x:Class="Gamestack.App.Views.ExplorerView"
+             x:DataType="vm:ExplorerViewModel">
+    <Grid ColumnDefinitions="*,320" Margin="16">
+        <DockPanel Grid.Column="0" Margin="0,0,12,0">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                <Button Content="⬆ Up" Command="{Binding NavigateUpCommand}"/>
+                <Button Content="↻ Refresh" Command="{Binding RefreshCommand}"/>
+                <Button Content="Open" Command="{Binding OpenCommand}" CommandParameter="{Binding SelectedItem}"/>
+                <Button Content="⬇ Download" Command="{Binding DownloadCommand}" CommandParameter="{Binding SelectedItem}"/>
+                <TextBlock Text="{Binding CurrentPath, StringFormat='/{0}'}" VerticalAlignment="Center" Opacity="0.7"/>
+            </StackPanel>
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Opacity="0.7" Margin="0,8,0,0"/>
+            <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" DoubleTapped="OnItemDoubleTapped">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:RemoteEntryViewModel">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Glyph}" Margin="0,0,8,0"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding SizeLabel}" Opacity="0.6"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <Border Grid.Column="1" Background="#10000000" CornerRadius="6" Padding="12">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="File details" FontWeight="Bold"/>
+                <TextBlock DockPanel.Dock="Top" Text="{Binding SelectedFileLabel}" Opacity="0.7" TextWrapping="Wrap" Margin="0,2,0,8"/>
+
+                <TextBlock DockPanel.Dock="Top" Text="Versions" FontWeight="SemiBold" Margin="0,4,0,2"/>
+                <ListBox DockPanel.Dock="Top" Height="160" ItemsSource="{Binding Versions}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="m:AssetVersion">
+                            <StackPanel Margin="0,2">
+                                <TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Opacity="0.85"/>
+                                <TextBlock Opacity="0.55" FontSize="11">
+                                    <Run Text="{Binding PushedBy.DisplayName}"/>
+                                    <Run Text=" · "/>
+                                    <Run Text="{Binding PushedAtUtc}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock DockPanel.Dock="Top" Text="Review" FontWeight="SemiBold" Margin="0,8,0,2"/>
+                <TextBlock DockPanel.Dock="Top" Text="{Binding ReviewStatusLabel}" Opacity="0.7" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                <TextBox DockPanel.Dock="Top" Text="{Binding ReviewerEmail}" PlaceholderText="reviewer email" Margin="0,0,0,4"/>
+                <TextBox DockPanel.Dock="Top" Text="{Binding ReviewerName}" PlaceholderText="reviewer name (optional)" Margin="0,0,0,4"/>
+                <TextBox DockPanel.Dock="Top" Text="{Binding ReviewNote}" PlaceholderText="note to reviewer (optional)" Margin="0,0,0,4"/>
+                <Button DockPanel.Dock="Top" Content="Request review (latest version)" Command="{Binding RequestReviewCommand}" Margin="0,0,0,8"/>
+
+                <TextBlock DockPanel.Dock="Top" Text="Feedback" FontWeight="SemiBold" Margin="0,8,0,2"/>
+                <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,6,0,0">
+                    <TextBox Text="{Binding NewComment}" PlaceholderText="Add feedback…" AcceptsReturn="True" Height="56"/>
+                    <Button Content="Post" Command="{Binding PostCommentCommand}" HorizontalAlignment="Right"/>
+                </StackPanel>
+                <ListBox ItemsSource="{Binding Comments}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="m:Comment">
+                            <StackPanel Margin="0,2">
+                                <TextBlock FontSize="11" Opacity="0.6">
+                                    <Run Text="{Binding Author.DisplayName}"/>
+                                    <Run Text=" · "/>
+                                    <Run Text="{Binding Kind}"/>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

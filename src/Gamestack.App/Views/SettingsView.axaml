@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gamestack.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="600"
+             x:Class="Gamestack.App.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="14" MaxWidth="680" HorizontalAlignment="Left">
+            <TextBlock Text="Settings" FontSize="20" FontWeight="Bold"/>
+
+            <TextBlock Text="Folders" FontWeight="SemiBold"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding SyncedFolderRoot}" Width="480" PlaceholderText="OneDrive/SharePoint synced folder"/>
+                <Button Content="Browse…" Click="OnBrowseSynced"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding WorkspaceRoot}" Width="480" PlaceholderText="Local working folder"/>
+                <Button Content="Browse…" Click="OnBrowseWorkspace"/>
+            </StackPanel>
+
+            <TextBlock Text="Validation" FontWeight="SemiBold" Margin="0,8,0,0"/>
+            <CheckBox Content="Enable asset validation" IsChecked="{Binding ValidationEnabled}"/>
+            <CheckBox Content="Images: width &amp; height divisible by 4" IsChecked="{Binding RequireDivisibleByFour}"/>
+            <CheckBox Content="Images: must be square" IsChecked="{Binding RequireSquare}"/>
+            <CheckBox Content="Images: must be power of two" IsChecked="{Binding RequirePowerOfTwo}"/>
+            <CheckBox Content="Block push on image validation failure" IsChecked="{Binding BlockOnImageFailure}"/>
+            <CheckBox Content="Check Spine exported version" IsChecked="{Binding CheckSpineVersion}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Required Spine version" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding RequiredSpineVersion}" Width="120" PlaceholderText="e.g. 4.1"/>
+                <CheckBox Content="Exact match (else major.minor)" IsChecked="{Binding SpineExactMatch}"/>
+            </StackPanel>
+            <CheckBox Content="Block push on Spine version failure" IsChecked="{Binding BlockOnSpineFailure}"/>
+
+            <TextBlock Text="Notifications (review requests &amp; responses)" FontWeight="SemiBold" Margin="0,8,0,0"/>
+            <CheckBox Content="Slack (Incoming Webhook)" IsChecked="{Binding SlackEnabled}"/>
+            <TextBox Text="{Binding SlackWebhookUrl}" PlaceholderText="https://hooks.slack.com/services/…" Width="480" HorizontalAlignment="Left"/>
+            <CheckBox Content="Email (SMTP)" IsChecked="{Binding EmailEnabled}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding SmtpHost}" PlaceholderText="smtp host" Width="240"/>
+                <TextBox Text="{Binding SmtpPort}" PlaceholderText="port" Width="80"/>
+                <CheckBox Content="STARTTLS" IsChecked="{Binding SmtpUseStartTls}" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding SmtpUser}" PlaceholderText="smtp username" Width="240"/>
+                <TextBox Text="{Binding SmtpPassword}" PlaceholderText="smtp password / app password" PasswordChar="•" Width="240"/>
+            </StackPanel>
+            <TextBox Text="{Binding FromAddress}" PlaceholderText="from address (defaults to username)" Width="320" HorizontalAlignment="Left"/>
+            <TextBlock Text="Note: the SMTP password is stored in plain text in settings.json. Microsoft 365 often disables SMTP AUTH — your admin may need to enable it or issue an app password."
+                       Opacity="0.6" FontSize="11" TextWrapping="Wrap" MaxWidth="560" HorizontalAlignment="Left"/>
+
+            <TextBlock Text="Behaviour" FontWeight="SemiBold" Margin="0,8,0,0"/>
+            <CheckBox Content="Run Gamestack on Windows startup" IsChecked="{Binding RunOnStartup}"/>
+            <CheckBox Content="Hold Windows shutdown/restart while unpushed changes exist" IsChecked="{Binding HoldShutdownWithUnpushedChanges}"/>
+            <CheckBox Content="End-of-day reminder for unpushed changes" IsChecked="{Binding EndOfDayReminderEnabled}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Reminder time (HH:mm)" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding EndOfDayReminderTime}" Width="80"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,12,0,0">
+                <Button Content="Save" Command="{Binding SaveCommand}" Width="120"/>
+                <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Opacity="0.8"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

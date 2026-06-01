@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gamestack.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="600"
+             x:Class="Gamestack.App.Views.ReviewInboxView"
+             x:DataType="vm:ReviewInboxViewModel">
+    <DockPanel Margin="16">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,8">
+            <TextBlock Text="Reviews" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Button Content="↻ Refresh" Command="{Binding RefreshCommand}"/>
+            <CheckBox Content="Assigned to me only" IsChecked="{Binding MineOnly}" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Border DockPanel.Dock="Bottom" Background="#10000000" CornerRadius="6" Padding="12" Margin="0,8,0,0"
+                IsVisible="{Binding Selected, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="6">
+                <TextBlock Text="{Binding Selected.Title}" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding DecisionComment}" PlaceholderText="Optional comment to the requester…"
+                         AcceptsReturn="True" Height="52"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="✅ Approve" Command="{Binding ApproveCommand}"/>
+                    <Button Content="✋ Request changes" Command="{Binding RequestChangesCommand}"/>
+                    <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Opacity="0.8" TextWrapping="Wrap"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <ListBox ItemsSource="{Binding Reviews}" SelectedItem="{Binding Selected}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ReviewItemViewModel">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                            <TextBlock FontSize="11" Opacity="0.6">
+                                <Run Text="reviewer:"/>
+                                <Run Text="{Binding ReviewerLabel}"/>
+                                <Run Text=" · by "/>
+                                <Run Text="{Binding RequestedByLabel}"/>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding StatusLabel}" VerticalAlignment="Center" Opacity="0.85"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

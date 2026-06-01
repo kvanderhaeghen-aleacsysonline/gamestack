@@ -1,0 +1,12 @@
+# Build output
+bin/
+obj/
+
+# IDE
+.vs/
+.idea/
+*.user
+*.suo
+
+# Local, machine-specific Claude settings (shared settings.json IS committed)
+.claude/settings.local.json

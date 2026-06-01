@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gamestack.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Gamestack.App.Views.SetupView"
+             x:DataType="vm:SetupViewModel">
+    <ScrollViewer>
+        <StackPanel Margin="32" Spacing="16" MaxWidth="640" HorizontalAlignment="Left">
+            <TextBlock Text="Welcome to Gamestack" FontSize="22" FontWeight="Bold"/>
+            <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                       Text="Choose your OneDrive/SharePoint synced folder (the cloud-backed 'remote') and a local working folder where you'll edit files. Gamestack copies finished work into the synced folder so the OneDrive client uploads it."/>
+
+            <TextBlock Text="Signed-in identity" FontWeight="SemiBold" Margin="0,8,0,0"/>
+            <TextBlock Text="{Binding IdentityLabel}" Opacity="0.8"/>
+
+            <TextBlock Text="OneDrive / SharePoint synced folder (remote)" FontWeight="SemiBold" Margin="0,8,0,0"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding SyncedFolderRoot}" Width="460" PlaceholderText="e.g. C:\Users\you\OneDrive - Napoleon Games\GameAssets"/>
+                <Button Content="Browse…" Click="OnBrowseSynced"/>
+            </StackPanel>
+
+            <TextBlock Text="Local working folder" FontWeight="SemiBold" Margin="0,8,0,0"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Text="{Binding WorkspaceRoot}" Width="460" PlaceholderText="e.g. D:\GamestackWork"/>
+                <Button Content="Browse…" Click="OnBrowseWorkspace"/>
+            </StackPanel>
+
+            <Button Content="Continue" Command="{Binding ContinueCommand}" Margin="0,12,0,0" Width="140"/>
+            <TextBlock Text="{Binding Status}" Foreground="IndianRed" TextWrapping="Wrap"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

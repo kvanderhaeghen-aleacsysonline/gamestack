@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rtk dotnet build:*)",
+      "Bash(rtk dotnet test:*)",
+      "Bash(rtk dotnet run:*)",
+      "Bash(rtk dotnet add:*)",
+      "Bash(rtk dotnet remove:*)",
+      "Bash(rtk dotnet sln:*)",
+      "Bash(rtk dotnet new:*)",
+      "Bash(rtk dotnet restore:*)",
+      "Bash(rtk git status:*)",
+      "Bash(rtk git diff:*)",
+      "Bash(rtk git log:*)",
+      "Bash(rtk git add:*)",
+      "Bash(rtk git commit:*)",
+      "Bash(rtk git branch:*)",
+      "Bash(rtk git init:*)",
+      "Bash(rtk read:*)",
+      "Bash(rtk ls:*)",
+      "Bash(rtk grep:*)"
+    ]
+  }
+}

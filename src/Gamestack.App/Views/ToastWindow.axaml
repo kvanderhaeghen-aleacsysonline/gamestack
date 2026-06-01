@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Gamestack.App.Views.ToastWindow"
+        Width="340" Height="120"
+        WindowDecorations="None" CanResize="False"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False"
+        Background="Transparent">
+    <Border Background="#2A2A33" CornerRadius="8" BorderBrush="#55FFFFFF" BorderThickness="1" Margin="6">
+        <DockPanel Margin="14">
+            <TextBlock DockPanel.Dock="Top" x:Name="TitleText" FontWeight="Bold" FontSize="14"/>
+            <Button DockPanel.Dock="Bottom" Content="Open Gamestack" Click="OnOpen" HorizontalAlignment="Right" Margin="0,8,0,0"/>
+            <TextBlock x:Name="BodyText" TextWrapping="Wrap" Opacity="0.85" Margin="0,4,0,0"/>
+        </DockPanel>
+    </Border>
+</Window>

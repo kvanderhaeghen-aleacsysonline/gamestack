@@ -1,0 +1,14 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Gamestack.App.Views.ConfirmDialog"
+        Title="Gamestack" Width="400" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="20" Spacing="14">
+        <TextBlock x:Name="TitleText" FontWeight="Bold" FontSize="15"/>
+        <TextBlock x:Name="MessageText" TextWrapping="Wrap" Opacity="0.9"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Content="No" Click="OnNo" MinWidth="80"/>
+            <Button Content="Yes" Click="OnYes" MinWidth="80"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
