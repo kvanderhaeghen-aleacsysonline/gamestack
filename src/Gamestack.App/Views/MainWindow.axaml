@@ -21,6 +21,7 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="NAVIGATE" Opacity="0.5" FontSize="11" Margin="2,0,0,4"/>
                 <Button Content="📦 Projects" Command="{Binding GoToExplorerCommand}" HorizontalAlignment="Stretch"/>
+                <Button Content="🔍 Search" Command="{Binding GoToSearchCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="🎮 Games" Command="{Binding GoToGamesCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="✏️ Changes" Command="{Binding GoToChangesCommand}" HorizontalAlignment="Stretch"/>
                 <Button Content="👀 Reviews" Command="{Binding GoToReviewsCommand}" HorizontalAlignment="Stretch"/>

@@ -11,4 +11,13 @@ public sealed class AssetFile
 
     /// <summary>Feedback chat thread for this asset.</summary>
     public List<Comment> Comments { get; set; } = new();
+
+    /// <summary>Tags assigned to this asset (a subset of the manifest's <see cref="Manifest.Tags"/> vocabulary).</summary>
+    public List<string> Tags { get; set; } = new();
+
+    /// <summary>
+    /// Custom attribute values for this asset, keyed by <see cref="CustomAttributeDefinition.Key"/>.
+    /// Values are stored as strings interpreted per the matching definition's type.
+    /// </summary>
+    public Dictionary<string, string> Attributes { get; set; } = new();
 }

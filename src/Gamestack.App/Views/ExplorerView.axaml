@@ -59,6 +59,50 @@
                 <TextBox DockPanel.Dock="Top" Text="{Binding ReviewNote}" PlaceholderText="note to reviewer (optional)" Margin="0,0,0,4"/>
                 <Button DockPanel.Dock="Top" Content="Request review (latest version)" Command="{Binding RequestReviewCommand}" Margin="0,0,0,8"/>
 
+                <TextBlock DockPanel.Dock="Top" Text="Tags" FontWeight="SemiBold" Margin="0,8,0,2"/>
+                <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Tags}" Margin="0,0,0,4">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Border Background="#20000000" CornerRadius="10" Padding="8,2" Margin="0,0,4,4">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                                    <Button Content="✕" FontSize="10" Padding="3,0" Background="Transparent" BorderThickness="0"
+                                            Command="{Binding $parent[ItemsControl].((vm:ExplorerViewModel)DataContext).RemoveTagCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4" Margin="0,0,0,8">
+                    <TextBox Text="{Binding NewTag}" PlaceholderText="add tag…" Width="200"/>
+                    <Button Content="Add" Command="{Binding AddTagCommand}"/>
+                </StackPanel>
+
+                <TextBlock DockPanel.Dock="Top" Text="Attributes" FontWeight="SemiBold" Margin="0,4,0,2"/>
+                <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Attributes}" Margin="0,0,0,4">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AttributeRowViewModel">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,1">
+                                <TextBlock Grid.Column="0" Text="{Binding Display}" TextWrapping="Wrap"/>
+                                <Button Grid.Column="1" Content="✕" FontSize="10" Padding="3,0" Background="Transparent" BorderThickness="0"
+                                        Command="{Binding $parent[ItemsControl].((vm:ExplorerViewModel)DataContext).RemoveAttributeCommand}"
+                                        CommandParameter="{Binding Key}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4" Margin="0,0,0,8">
+                    <TextBox Text="{Binding NewAttributeKey}" PlaceholderText="key" Width="100"/>
+                    <TextBox Text="{Binding NewAttributeValue}" PlaceholderText="value" Width="110"/>
+                    <Button Content="Set" Command="{Binding SetAttributeCommand}"/>
+                </StackPanel>
+
                 <TextBlock DockPanel.Dock="Top" Text="Feedback" FontWeight="SemiBold" Margin="0,8,0,2"/>
                 <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,6,0,0">
                     <TextBox Text="{Binding NewComment}" PlaceholderText="Add feedback…" AcceptsReturn="True" Height="56"/>

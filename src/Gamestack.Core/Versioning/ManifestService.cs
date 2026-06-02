@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Gamestack.Core.Abstractions;
 using Gamestack.Core.Models;
+using Gamestack.Core.Organization;
 
 namespace Gamestack.Core.Versioning;
 
@@ -117,6 +118,100 @@ public sealed class ManifestService
 
         var kind = decision == ReviewStatus.Approved ? CommentKind.Approve : CommentKind.RequestChanges;
         return AddComment(manifest, path, decidedBy, commentText, version, kind);
+    }
+
+    // ---- Tags ----
+
+    /// <summary>
+    /// Add a tag to the workspace vocabulary if not already present (case-insensitive). Returns true
+    /// when a new tag was added.
+    /// </summary>
+    public bool AddTagToVocabulary(Manifest manifest, string tag)
+    {
+        tag = tag.Trim();
+        if (tag.Length == 0) return false;
+        if (manifest.Tags.Any(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase)))
+            return false;
+        manifest.Tags.Add(tag);
+        return true;
+    }
+
+    /// <summary>
+    /// Assign a tag to a file (creating the file entry if needed and adding the tag to the
+    /// vocabulary). No-op if the file already has the tag. Returns true when the tag was added.
+    /// </summary>
+    public bool AddFileTag(Manifest manifest, string path, string tag)
+    {
+        tag = tag.Trim();
+        if (tag.Length == 0) return false;
+        AddTagToVocabulary(manifest, tag);
+        var file = GetOrAdd(manifest, path);
+        if (file.Tags.Any(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase)))
+            return false;
+        file.Tags.Add(tag);
+        return true;
+    }
+
+    /// <summary>Remove a tag from a file (case-insensitive). Returns true when a tag was removed.</summary>
+    public bool RemoveFileTag(Manifest manifest, string path, string tag)
+    {
+        if (!manifest.Files.TryGetValue(path, out var file)) return false;
+        return file.Tags.RemoveAll(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase)) > 0;
+    }
+
+    /// <summary>
+    /// Auto-tag a file by matching its name against the vocabulary (see <see cref="FileNameTokenizer"/>).
+    /// Returns the tags that were newly added to the file.
+    /// </summary>
+    public IReadOnlyList<string> AutoTagFile(Manifest manifest, string path)
+    {
+        var name = path.Contains('/') ? path[(path.LastIndexOf('/') + 1)..] : path;
+        var added = new List<string>();
+        foreach (var tag in FileNameTokenizer.MatchTags(name, manifest.Tags))
+        {
+            if (AddFileTag(manifest, path, tag))
+                added.Add(tag);
+        }
+        return added;
+    }
+
+    // ---- Custom attributes ----
+
+    /// <summary>
+    /// Define (or update the type of) a workspace custom attribute. Returns the definition.
+    /// </summary>
+    public CustomAttributeDefinition DefineAttribute(Manifest manifest, string key, AttributeValueType type)
+    {
+        key = key.Trim();
+        if (key.Length == 0) throw new ArgumentException("Attribute key cannot be empty.", nameof(key));
+        var existing = manifest.AttributeDefinitions
+            .FirstOrDefault(d => string.Equals(d.Key, key, StringComparison.OrdinalIgnoreCase));
+        if (existing is not null)
+        {
+            existing.Type = type;
+            return existing;
+        }
+        var def = new CustomAttributeDefinition { Key = key, Type = type };
+        manifest.AttributeDefinitions.Add(def);
+        return def;
+    }
+
+    /// <summary>
+    /// Set (or clear, when <paramref name="value"/> is null/empty) a custom attribute value on a file.
+    /// The file and the attribute definition are created if missing (definition defaults to Text).
+    /// </summary>
+    public void SetAttribute(Manifest manifest, string path, string key, string? value)
+    {
+        key = key.Trim();
+        if (key.Length == 0) throw new ArgumentException("Attribute key cannot be empty.", nameof(key));
+        if (!manifest.AttributeDefinitions.Any(d => string.Equals(d.Key, key, StringComparison.OrdinalIgnoreCase)))
+            DefineAttribute(manifest, key, AttributeValueType.Text);
+
+        var file = GetOrAdd(manifest, path);
+        if (string.IsNullOrEmpty(value))
+            file.Attributes.Remove(key);
+        else
+            file.Attributes[key] = value;
     }
 
     private static AssetVersion FindVersion(Manifest manifest, string path, int version)

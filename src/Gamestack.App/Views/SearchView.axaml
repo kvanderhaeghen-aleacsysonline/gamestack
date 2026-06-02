@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gamestack.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="600"
+             x:Class="Gamestack.App.Views.SearchView"
+             x:DataType="vm:SearchViewModel">
+    <DockPanel Margin="16">
+        <TextBlock DockPanel.Dock="Top" Text="Search assets" FontWeight="Bold" FontSize="16" Margin="0,0,0,8"/>
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" Margin="0,0,0,6">
+            <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding SearchText}" PlaceholderText="name contains…" Margin="0,0,6,6"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TagFilter}" PlaceholderText="tags (comma-separated)" Margin="0,0,6,6"/>
+            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Extension}" PlaceholderText="type e.g. png" Margin="0,0,0,6"/>
+            <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding GameId}" PlaceholderText="game id" Margin="0,0,6,0"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AttributeKey}" PlaceholderText="attribute key" Margin="0,0,6,0"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding AttributeValue}" PlaceholderText="attribute value" Margin="0,0,0,0"/>
+        </Grid>
+
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Status}" Opacity="0.7" Margin="0,2,0,8"/>
+
+        <ListBox ItemsSource="{Binding Results}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:SearchResultViewModel">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <TextBlock Grid.Column="0" Text="{Binding Path}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TagsLabel}" Opacity="0.6" Margin="8,0"/>
+                        <TextBlock Grid.Column="2" Text="{Binding VersionLabel}" Opacity="0.6"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

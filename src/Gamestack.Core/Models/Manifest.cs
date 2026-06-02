@@ -21,4 +21,10 @@ public sealed class Manifest
 
     /// <summary>Tracked files keyed by workspace-relative path ('/'-separated).</summary>
     public Dictionary<string, AssetFile> Files { get; set; } = new();
+
+    /// <summary>Workspace-wide tag vocabulary; per-file tags are drawn from this list.</summary>
+    public List<string> Tags { get; set; } = new();
+
+    /// <summary>Workspace-defined custom attribute fields available to assign per file.</summary>
+    public List<CustomAttributeDefinition> AttributeDefinitions { get; set; } = new();
 }

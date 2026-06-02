@@ -62,6 +62,7 @@ public partial class MainWindowViewModel : ViewModelBase, INavigator
     }
 
     [RelayCommand] private Task GoToGames() => ShowAsync(_services.GetRequiredService<GamesViewModel>());
+    [RelayCommand] private Task GoToSearch() => ShowAsync(_services.GetRequiredService<SearchViewModel>());
     [RelayCommand] private Task GoToReviews() => ShowAsync(_services.GetRequiredService<ReviewInboxViewModel>());
     [RelayCommand] private Task GoToExplorer() => GoToExplorerAsync();
     [RelayCommand] private Task GoToChanges() => GoToChangesAsync();

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Gamestack.Mcp</RootNamespace>
+    <AssemblyName>Gamestack.Mcp</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="1.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gamestack.Core\Gamestack.Core.csproj" />
+    <ProjectReference Include="..\Gamestack.Storage.SyncedFolder\Gamestack.Storage.SyncedFolder.csproj" />
+    <ProjectReference Include="..\Gamestack.Infrastructure\Gamestack.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

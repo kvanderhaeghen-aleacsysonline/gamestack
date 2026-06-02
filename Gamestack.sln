@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gamestack.Storage.SyncedFolder", "src\Gamestack.Storage.SyncedFolder\Gamestack.Storage.SyncedFolder.csproj", "{65147880-59DA-4808-B867-4DC7F34633CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gamestack.Infrastructure", "src\Gamestack.Infrastructure\Gamestack.Infrastructure.csproj", "{314AAE71-B3B8-4D51-9BFF-FB959124F6A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gamestack.Mcp", "src\Gamestack.Mcp\Gamestack.Mcp.csproj", "{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,18 @@ Global
 		{314AAE71-B3B8-4D51-9BFF-FB959124F6A7}.Release|x64.Build.0 = Release|Any CPU
 		{314AAE71-B3B8-4D51-9BFF-FB959124F6A7}.Release|x86.ActiveCfg = Release|Any CPU
 		{314AAE71-B3B8-4D51-9BFF-FB959124F6A7}.Release|x86.Build.0 = Release|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Debug|x64.Build.0 = Debug|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Debug|x86.Build.0 = Debug|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Release|x64.ActiveCfg = Release|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Release|x64.Build.0 = Release|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,5 +126,6 @@ Global
 		{5092AD07-910F-4C9E-A1DF-5F4331FD8470} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{65147880-59DA-4808-B867-4DC7F34633CD} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{314AAE71-B3B8-4D51-9BFF-FB959124F6A7} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{6BCA0D2C-37EB-47CF-B4A0-2024D29A54E1} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

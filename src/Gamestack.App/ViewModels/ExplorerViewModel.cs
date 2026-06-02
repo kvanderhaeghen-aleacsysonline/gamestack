@@ -27,6 +27,14 @@ public sealed class RemoteEntryViewModel
     };
 }
 
+/// <summary>One custom-attribute key/value pair shown for the selected file.</summary>
+public sealed class AttributeRowViewModel
+{
+    public required string Key { get; init; }
+    public required string Value { get; init; }
+    public string Display => $"{Key}: {Value}";
+}
+
 /// <summary>
 /// Browses the synced-folder "remote", downloads selected files into the workspace, and shows the
 /// version history + feedback chat for the selected file.
@@ -48,10 +56,19 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
     [ObservableProperty] private string _reviewerName = "";
     [ObservableProperty] private string _reviewNote = "";
     [ObservableProperty] private string _reviewStatusLabel = "";
+    [ObservableProperty] private string _newTag = "";
+    [ObservableProperty] private string _newAttributeKey = "";
+    [ObservableProperty] private string _newAttributeValue = "";
 
     public ObservableCollection<RemoteEntryViewModel> Items { get; } = new();
     public ObservableCollection<AssetVersion> Versions { get; } = new();
     public ObservableCollection<Comment> Comments { get; } = new();
+
+    /// <summary>Tags assigned to the selected file.</summary>
+    public ObservableCollection<string> Tags { get; } = new();
+
+    /// <summary>Custom attribute values (key → value) on the selected file.</summary>
+    public ObservableCollection<AttributeRowViewModel> Attributes { get; } = new();
 
     public ExplorerViewModel(WorkspaceSession session, ManifestService manifests, IAuthProvider auth, ReviewService reviews)
     {
@@ -159,10 +176,14 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
     {
         Versions.Clear();
         Comments.Clear();
+        Tags.Clear();
+        Attributes.Clear();
         SelectedFileLabel = "";
         ReviewStatusLabel = "";
         PostCommentCommand.NotifyCanExecuteChanged();
         RequestReviewCommand.NotifyCanExecuteChanged();
+        AddTagCommand.NotifyCanExecuteChanged();
+        SetAttributeCommand.NotifyCanExecuteChanged();
         if (value is null || value.IsFolder) return;
 
         SelectedFileLabel = value.Path;
@@ -170,6 +191,7 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         {
             foreach (var v in file.Versions.OrderByDescending(v => v.Version)) Versions.Add(v);
             foreach (var c in file.Comments) Comments.Add(c);
+            RefreshOrganization(file);
 
             var latest = file.Versions.LastOrDefault();
             ReviewStatusLabel = latest?.Review is { } r
@@ -180,6 +202,81 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         {
             ReviewStatusLabel = "Not yet pushed — no version to review.";
         }
+    }
+
+    private void RefreshOrganization(AssetFile file)
+    {
+        Tags.Clear();
+        Attributes.Clear();
+        foreach (var t in file.Tags) Tags.Add(t);
+        foreach (var (k, v) in file.Attributes) Attributes.Add(new AttributeRowViewModel { Key = k, Value = v });
+    }
+
+    private bool CanEditSelectedFile => SelectedItem is { IsFolder: false };
+
+    private bool CanAddTag => CanEditSelectedFile && !string.IsNullOrWhiteSpace(NewTag);
+    partial void OnNewTagChanged(string value) => AddTagCommand.NotifyCanExecuteChanged();
+
+    [RelayCommand(CanExecute = nameof(CanAddTag))]
+    private async Task AddTag()
+    {
+        if (SelectedItem is null || _session.Engine is null) return;
+        try
+        {
+            if (_manifests.AddFileTag(_manifest, SelectedItem.Path, NewTag))
+            {
+                await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+                RefreshOrganization(_manifest.Files[SelectedItem.Path]);
+            }
+            NewTag = "";
+        }
+        catch (Exception ex) { Status = $"Could not add tag: {ex.Message}"; }
+    }
+
+    [RelayCommand]
+    private async Task RemoveTag(string? tag)
+    {
+        if (tag is null || SelectedItem is null || _session.Engine is null) return;
+        try
+        {
+            if (_manifests.RemoveFileTag(_manifest, SelectedItem.Path, tag))
+            {
+                await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+                if (_manifest.Files.TryGetValue(SelectedItem.Path, out var f)) RefreshOrganization(f);
+            }
+        }
+        catch (Exception ex) { Status = $"Could not remove tag: {ex.Message}"; }
+    }
+
+    private bool CanSetAttribute => CanEditSelectedFile && !string.IsNullOrWhiteSpace(NewAttributeKey);
+    partial void OnNewAttributeKeyChanged(string value) => SetAttributeCommand.NotifyCanExecuteChanged();
+
+    [RelayCommand(CanExecute = nameof(CanSetAttribute))]
+    private async Task SetAttribute()
+    {
+        if (SelectedItem is null || _session.Engine is null) return;
+        try
+        {
+            _manifests.SetAttribute(_manifest, SelectedItem.Path, NewAttributeKey.Trim(), NewAttributeValue.Trim());
+            await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+            if (_manifest.Files.TryGetValue(SelectedItem.Path, out var f)) RefreshOrganization(f);
+            NewAttributeKey = "";
+            NewAttributeValue = "";
+        }
+        catch (Exception ex) { Status = $"Could not set attribute: {ex.Message}"; }
+    }
+
+    [RelayCommand]
+    private async Task RemoveAttribute(string? key)
+    {
+        if (key is null || SelectedItem is null || _session.Engine is null) return;
+        try
+        {
+            _manifests.SetAttribute(_manifest, SelectedItem.Path, key, null);
+            await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+            if (_manifest.Files.TryGetValue(SelectedItem.Path, out var f)) RefreshOrganization(f);
+        }
+        catch (Exception ex) { Status = $"Could not remove attribute: {ex.Message}"; }
     }
 
     private bool CanPostComment => SelectedItem is { IsFolder: false } && !string.IsNullOrWhiteSpace(NewComment);

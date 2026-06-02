@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Gamestack.App.Services;
 using Gamestack.Core.Abstractions;
 using Gamestack.Core.Models;
+using Gamestack.Core.Versioning;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -31,6 +32,7 @@ public partial class ChangesViewModel : ViewModelBase, IAsyncLoad
 {
     private readonly WorkspaceSession _session;
     private readonly IAuthProvider _auth;
+    private readonly ManifestService _manifests;
     private Manifest _manifest = new() { ProjectId = "" };
 
     [ObservableProperty] private ChangeItemViewModel? _selectedChange;
@@ -40,10 +42,11 @@ public partial class ChangesViewModel : ViewModelBase, IAsyncLoad
 
     public ObservableCollection<ChangeItemViewModel> Changes { get; } = new();
 
-    public ChangesViewModel(WorkspaceSession session, IAuthProvider auth)
+    public ChangesViewModel(WorkspaceSession session, IAuthProvider auth, ManifestService manifests)
     {
         _session = session;
         _auth = auth;
+        _manifests = manifests;
     }
 
     public async Task LoadAsync()
@@ -103,7 +106,20 @@ public partial class ChangesViewModel : ViewModelBase, IAsyncLoad
 
             HasConflict = false;
             Description = "";
-            Status = $"Pushed {SelectedChange.Path} as v{result.Version!.Version}.";
+
+            // Auto-tag a newly added asset by matching its name against the tag vocabulary.
+            var tagNote = "";
+            if (result.Version!.Version == 1)
+            {
+                var added = _manifests.AutoTagFile(_manifest, SelectedChange.Path);
+                if (added.Count > 0)
+                {
+                    await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+                    tagNote = $" Auto-tagged: {string.Join(", ", added)}.";
+                }
+            }
+
+            Status = $"Pushed {SelectedChange.Path} as v{result.Version!.Version}.{tagNote}";
             await DetectAsync();
         }
         catch (Exception ex) { Status = $"Push failed: {ex.Message}"; }

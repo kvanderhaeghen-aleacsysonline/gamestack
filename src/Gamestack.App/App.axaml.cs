@@ -73,6 +73,7 @@ public partial class App : Application
         services.AddTransient<ChangesViewModel>();
         services.AddTransient<ReviewInboxViewModel>();
         services.AddTransient<GamesViewModel>();
+        services.AddTransient<SearchViewModel>();
         services.AddTransient<SettingsViewModel>();
     }
 }
