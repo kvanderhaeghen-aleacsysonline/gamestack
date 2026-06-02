@@ -36,7 +36,7 @@ public sealed class WorkspaceManifestAccessor
                 "Complete setup in the Gamestack desktop app first.");
 
         var backend = new SyncedFolderBackend(settings.SyncedFolderRoot!);
-        var json = await backend.ReadTextAsync(SyncEngine.ManifestPath(""), ct).ConfigureAwait(false);
-        return json is null ? _manifests.CreateNew("Workspace") : _manifests.Deserialize(json);
+        var store = new AssetMetadataStore(backend, _manifests);
+        return await store.LoadAsync("", "Workspace", ct).ConfigureAwait(false);
     }
 }

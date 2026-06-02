@@ -225,7 +225,9 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         {
             if (_manifests.AddFileTag(_manifest, SelectedItem.Path, NewTag))
             {
-                await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+                // Tag added to the file; the vocabulary may have grown, so save both shards.
+                await _session.Engine.SaveAssetAsync(_session.ProjectRemoteRoot, _manifest, SelectedItem.Path);
+                await _session.Engine.SaveWorkspaceAsync(_session.ProjectRemoteRoot, _manifest);
                 RefreshOrganization(_manifest.Files[SelectedItem.Path]);
             }
             NewTag = "";
@@ -241,7 +243,7 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         {
             if (_manifests.RemoveFileTag(_manifest, SelectedItem.Path, tag))
             {
-                await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+                await _session.Engine.SaveAssetAsync(_session.ProjectRemoteRoot, _manifest, SelectedItem.Path);
                 if (_manifest.Files.TryGetValue(SelectedItem.Path, out var f)) RefreshOrganization(f);
             }
         }
@@ -258,7 +260,9 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         try
         {
             _manifests.SetAttribute(_manifest, SelectedItem.Path, NewAttributeKey.Trim(), NewAttributeValue.Trim());
-            await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+            // Value lives on the file; the attribute definition may be new, so save both shards.
+            await _session.Engine.SaveAssetAsync(_session.ProjectRemoteRoot, _manifest, SelectedItem.Path);
+            await _session.Engine.SaveWorkspaceAsync(_session.ProjectRemoteRoot, _manifest);
             if (_manifest.Files.TryGetValue(SelectedItem.Path, out var f)) RefreshOrganization(f);
             NewAttributeKey = "";
             NewAttributeValue = "";
@@ -273,7 +277,7 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         try
         {
             _manifests.SetAttribute(_manifest, SelectedItem.Path, key, null);
-            await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+            await _session.Engine.SaveAssetAsync(_session.ProjectRemoteRoot, _manifest, SelectedItem.Path);
             if (_manifest.Files.TryGetValue(SelectedItem.Path, out var f)) RefreshOrganization(f);
         }
         catch (Exception ex) { Status = $"Could not remove attribute: {ex.Message}"; }
@@ -322,7 +326,7 @@ public partial class ExplorerViewModel : ViewModelBase, IAsyncLoad
         {
             var version = _manifest.Files.TryGetValue(SelectedItem.Path, out var f) ? f.CurrentVersion : 0;
             var comment = _manifests.AddComment(_manifest, SelectedItem.Path, _auth.CurrentUser, NewComment.Trim(), version);
-            await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+            await _session.Engine.SaveAssetAsync(_session.ProjectRemoteRoot, _manifest, SelectedItem.Path);
             Comments.Add(comment);
             NewComment = "";
         }

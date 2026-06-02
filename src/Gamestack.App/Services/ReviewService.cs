@@ -25,7 +25,7 @@ public sealed class ReviewService
         UserIdentity reviewer, UserIdentity requestedBy, string? note, CancellationToken ct = default)
     {
         _manifests.RequestReview(manifest, path, version, reviewer, requestedBy);
-        await _session.Engine!.SaveManifestAsync(_session.ProjectRemoteRoot, manifest, ct).ConfigureAwait(false);
+        await _session.Engine!.SaveAssetAsync(_session.ProjectRemoteRoot, manifest, path, ct).ConfigureAwait(false);
         var message = ReviewNotifications.Requested(path, version, reviewer, requestedBy, note);
         return await NotifyAsync(message, ct).ConfigureAwait(false);
     }
@@ -35,7 +35,7 @@ public sealed class ReviewService
         UserIdentity decidedBy, ReviewStatus decision, string comment, UserIdentity requestedBy, CancellationToken ct = default)
     {
         _manifests.SubmitReviewDecision(manifest, path, version, decidedBy, decision, comment);
-        await _session.Engine!.SaveManifestAsync(_session.ProjectRemoteRoot, manifest, ct).ConfigureAwait(false);
+        await _session.Engine!.SaveAssetAsync(_session.ProjectRemoteRoot, manifest, path, ct).ConfigureAwait(false);
         var message = ReviewNotifications.Decided(path, version, decision, decidedBy, requestedBy, comment);
         return await NotifyAsync(message, ct).ConfigureAwait(false);
     }

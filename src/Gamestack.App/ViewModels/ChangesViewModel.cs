@@ -114,7 +114,9 @@ public partial class ChangesViewModel : ViewModelBase, IAsyncLoad
                 var added = _manifests.AutoTagFile(_manifest, SelectedChange.Path);
                 if (added.Count > 0)
                 {
-                    await _session.Engine.SaveManifestAsync(_session.ProjectRemoteRoot, _manifest);
+                    // Persist the tagged asset shard and the (possibly grown) tag vocabulary.
+                    await _session.Engine.SaveAssetAsync(_session.ProjectRemoteRoot, _manifest, SelectedChange.Path);
+                    await _session.Engine.SaveWorkspaceAsync(_session.ProjectRemoteRoot, _manifest);
                     tagNote = $" Auto-tagged: {string.Join(", ", added)}.";
                 }
             }

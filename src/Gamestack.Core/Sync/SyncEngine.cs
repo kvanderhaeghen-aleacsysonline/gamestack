@@ -28,22 +28,26 @@ public sealed class SyncEngine
         _backend = backend;
         _state = state;
         _manifests = manifests;
+        Metadata = new AssetMetadataStore(backend, manifests);
     }
 
-    /// <summary>Remote path of a project's manifest file.</summary>
-    public static string ManifestPath(string projectRemoteRoot)
-        => Join(projectRemoteRoot, $"{ChangeDetector.MetadataFolder}/manifest.json");
+    /// <summary>The sharded metadata store backing manifest load/save (one file per asset).</summary>
+    public AssetMetadataStore Metadata { get; }
 
-    /// <summary>Load a project's manifest, returning a fresh empty one when none exists yet.</summary>
-    public async Task<Manifest> LoadManifestAsync(string projectRemoteRoot, string projectName, CancellationToken ct = default)
-    {
-        var json = await _backend.ReadTextAsync(ManifestPath(projectRemoteRoot), ct).ConfigureAwait(false);
-        return json is null ? _manifests.CreateNew(projectName) : _manifests.Deserialize(json);
-    }
+    /// <summary>
+    /// Load the workspace manifest, assembled from the per-asset shards, returning a fresh empty one
+    /// when nothing has been stored yet.
+    /// </summary>
+    public Task<Manifest> LoadManifestAsync(string projectRemoteRoot, string projectName, CancellationToken ct = default)
+        => Metadata.LoadAsync(projectRemoteRoot, projectName, ct);
 
-    /// <summary>Persist a project's manifest to the backend.</summary>
-    public Task SaveManifestAsync(string projectRemoteRoot, Manifest manifest, CancellationToken ct = default)
-        => _backend.WriteTextAsync(ManifestPath(projectRemoteRoot), _manifests.Serialize(manifest), ct);
+    /// <summary>Persist a single asset's shard from the in-memory manifest.</summary>
+    public Task SaveAssetAsync(string projectRemoteRoot, Manifest manifest, string relativePath, CancellationToken ct = default)
+        => Metadata.SaveAssetAsync(projectRemoteRoot, manifest, relativePath, ct);
+
+    /// <summary>Persist the workspace-level metadata (project info, tag vocabulary, attribute definitions).</summary>
+    public Task SaveWorkspaceAsync(string projectRemoteRoot, Manifest manifest, CancellationToken ct = default)
+        => Metadata.SaveWorkspaceAsync(projectRemoteRoot, manifest, ct);
 
     /// <summary>
     /// Download one file into the local workspace, mark it materialized, and record its synced
@@ -83,7 +87,15 @@ public sealed class SyncEngine
     {
         var baseline = await _state.GetBaselineAsync(relativePath, ct).ConfigureAwait(false);
         var baselineVersion = baseline?.Version ?? 0;
-        var remoteVersion = manifest.Files.TryGetValue(relativePath, out var entry) ? entry.CurrentVersion : 0;
+
+        // Re-read THIS asset's shard so the conflict check sees the authoritative remote version,
+        // even if a teammate pushed it since this manifest was loaded. Sync the in-memory entry to it.
+        var fresh = await Metadata.LoadAssetAsync(projectRemoteRoot, relativePath, ct).ConfigureAwait(false);
+        if (fresh is not null)
+            manifest.Files[relativePath] = fresh;
+        else
+            manifest.Files.Remove(relativePath);
+        var remoteVersion = fresh?.CurrentVersion ?? 0;
 
         if (!force && remoteVersion > baselineVersion)
             return new PushResult(Conflict: true, Version: null, baselineVersion, remoteVersion);
@@ -99,7 +111,7 @@ public sealed class SyncEngine
 
         var sha = await Hasher.Sha256FileAsync(localAbs, ct).ConfigureAwait(false);
         var version = _manifests.AddVersion(manifest, relativePath, sha, size, pushedBy, description, info.BackendVersionId);
-        await SaveManifestAsync(projectRemoteRoot, manifest, ct).ConfigureAwait(false);
+        await SaveAssetAsync(projectRemoteRoot, manifest, relativePath, ct).ConfigureAwait(false);
 
         await _state.SetBaselineAsync(
             new SyncBaseline(relativePath, version.Version, sha, size, File.GetLastWriteTimeUtc(localAbs)), ct)

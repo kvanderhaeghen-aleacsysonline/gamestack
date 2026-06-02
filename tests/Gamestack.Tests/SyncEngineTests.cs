@@ -37,7 +37,8 @@ public class SyncEngineTests
 
         var baseline = await state.GetBaselineAsync("hero.psd");
         Assert.Equal(1, baseline!.Version);
-        Assert.NotNull(await backend.ReadTextAsync(SyncEngine.ManifestPath(RemoteRoot)));
+        // Metadata is sharded: the asset's own shard exists, not a single manifest.json.
+        Assert.NotNull(await backend.ReadTextAsync(AssetMetadataStore.ShardPath(RemoteRoot, "hero.psd")));
     }
 
     [Fact]
@@ -64,7 +65,9 @@ public class SyncEngineTests
         var manifest = await engine.LoadManifestAsync(RemoteRoot, "Demo");
 
         await engine.PushFileAsync(RemoteRoot, dir.Path, "hero.psd", manifest, "first", Alice); // baseline -> v1
-        manifests.AddVersion(manifest, "hero.psd", "othersha", 1, Alice, "someone else"); // remote -> v2, baseline still 1
+        // A teammate pushes a new version: persist the advanced shard (remote -> v2), baseline still 1.
+        manifests.AddVersion(manifest, "hero.psd", "othersha", 1, Alice, "someone else");
+        await engine.SaveAssetAsync(RemoteRoot, manifest, "hero.psd");
         var uploadsBefore = backend.UploadCount;
 
         var conflict = await engine.PushFileAsync(RemoteRoot, dir.Path, "hero.psd", manifest, "mine", Alice);
@@ -85,6 +88,7 @@ public class SyncEngineTests
 
         await engine.PushFileAsync(RemoteRoot, dir.Path, "hero.psd", manifest, "first", Alice);
         manifests.AddVersion(manifest, "hero.psd", "othersha", 1, Alice, "someone else");
+        await engine.SaveAssetAsync(RemoteRoot, manifest, "hero.psd"); // teammate advanced remote -> v2
 
         var forced = await engine.PushFileAsync(RemoteRoot, dir.Path, "hero.psd", manifest, "mine", Alice, force: true);
 
