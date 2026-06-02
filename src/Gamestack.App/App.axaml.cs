@@ -7,6 +7,7 @@ using Gamestack.App.ViewModels;
 using Gamestack.App.Views;
 using Gamestack.Core.Abstractions;
 using Gamestack.Core.Projects;
+using Gamestack.Core.Security;
 using Gamestack.Core.Validation;
 using Gamestack.Core.Versioning;
 using Gamestack.Infrastructure;
@@ -52,7 +53,9 @@ public partial class App : Application
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IClock, SystemClock>();
-        services.AddSingleton<ISettingsStore>(_ => new JsonSettingsStore());
+        services.AddSingleton<ISecretProtector>(_ =>
+            OperatingSystem.IsWindows() ? new WindowsDpapiSecretProtector() : new PassthroughSecretProtector());
+        services.AddSingleton<ISettingsStore>(sp => new JsonSettingsStore(protector: sp.GetRequiredService<ISecretProtector>()));
         services.AddSingleton<ILocalStateStore>(_ => new JsonLocalStateStore());
         services.AddSingleton<IAuthProvider, OneDriveIdentityProvider>();
         services.AddSingleton<IStartupService, WindowsStartupService>();

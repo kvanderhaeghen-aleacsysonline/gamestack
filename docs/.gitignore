@@ -1,0 +1,4 @@
+# DocFX generated output
+_site/
+api/*.yml
+api/.manifest

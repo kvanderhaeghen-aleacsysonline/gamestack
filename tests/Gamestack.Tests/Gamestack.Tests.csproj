@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\src\Gamestack.Core\Gamestack.Core.csproj" />
     <ProjectReference Include="..\..\src\Gamestack.Storage.SyncedFolder\Gamestack.Storage.SyncedFolder.csproj" />
     <ProjectReference Include="..\..\src\Gamestack.Infrastructure\Gamestack.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Gamestack.Platform\Gamestack.Platform.csproj" />
   </ItemGroup>
 
 </Project>
